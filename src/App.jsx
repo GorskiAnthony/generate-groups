@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
+
 import style from "./assets/css/app.module.css";
 
 function App() {
@@ -14,9 +16,37 @@ function App() {
 
   const fileReader = new FileReader();
 
+  const handleTakePicture = () => {
+    html2canvas(document.querySelector("#teams_picture")).then((canvas) => {
+      const img = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = img;
+      link.download = "teams.png";
+      link.click();
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(nbTeams.current.value);
+    // Create random teams from students
+    const students = localStorage.getItem("students").split(",");
+    const teams = [];
+    const groups = nbTeams.current.value;
+    for (let i = 0; i < groups; i++) {
+      teams.push([]);
+    }
+
+    // now, we need to distribute the students randomly
+    while (students.length > 0) {
+      for (let i = 0; i < groups; i++) {
+        const randomIndex = Math.floor(Math.random() * students.length);
+        const student = students.splice(randomIndex, 1);
+        // add the student to the team
+        teams[i].push(student);
+        teams[i] = teams[i].flat();
+      }
+    }
+    setTeams(teams);
   };
 
   const handleReset = (event) => {
@@ -66,7 +96,7 @@ function App() {
 
   return (
     <main className="container-fluid">
-      <h1>Générateur de groupe</h1>
+      <h1>Générateur de groupe aléatoire</h1>
       <section className={style.section}>
         <div>
           <h2>Équipes</h2>
@@ -74,6 +104,33 @@ function App() {
             Il vous suffit de saisir le nombre d'équipes souhaitées et de
             cliquer sur le bouton ci-dessous.
           </p>
+          <div>
+            <ul className={style.grid_teams} id="teams_picture">
+              {teams.map((team, index) => (
+                <li
+                  key={index}
+                  className={style.li}
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  <h3>Équipe {index + 1}</h3>
+                  <ul>
+                    {team.map((student, index) => (
+                      <li key={index}>{student}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {
+            // if there are no teams, we don't show the button
+            teams.length === 0 ? (
+              <p>Il n'y a pas d'équipes pour le moment.</p>
+            ) : (
+              <button onClick={handleTakePicture}>sauvegarder</button>
+            )
+          }
+          <hr />
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <fieldset className="grid">

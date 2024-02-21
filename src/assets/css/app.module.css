@@ -8,12 +8,22 @@
 
 .section {
   display: flex;
-  gap: 3rem;
+  gap: 2rem;
+}
+
+.section div {
+  flex: 1;
 }
 
 .grid_students {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid_teams {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
