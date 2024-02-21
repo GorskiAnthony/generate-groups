@@ -1,36 +1,17 @@
+// Packages
 import { useRef, useState } from "react";
-import html2canvas from "html2canvas";
-import { toast } from "react-toastify";
-import JSConfetti from "js-confetti";
 
+// Local
+import handleTakePicture from "./services/takePicture.js";
+import { getItems, setItems, removeItem } from "./services/localStorage.js";
+import { toastSuccess, toastError, toastNatural } from "./services/toast.js";
+import jsConfetti from "./services/confetti.js";
+
+// Style
 import style from "./assets/css/app.module.css";
 
-function toastError(message) {
-  toast.error(message, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
-}
-function toastSuccess(message) {
-  toast(message, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    emoji: "🎉",
-  });
-}
-
 function App() {
-  const jsConfetti = new JSConfetti();
-
-  const getStudents = localStorage.getItem("students");
+  const getStudents = getItems("students");
 
   const [file, setFile] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -42,20 +23,10 @@ function App() {
 
   const fileReader = new FileReader();
 
-  const handleTakePicture = () => {
-    html2canvas(document.querySelector("#teams_picture")).then((canvas) => {
-      const img = canvas.toDataURL("image/png");
-      const link = document.createElement("a");
-      link.href = img;
-      link.download = "teams.png";
-      link.click();
-    });
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     // Create random teams from students
-    const students = localStorage.getItem("students").split(",");
+    const students = getItems("students").split(",");
     const teams = [];
     const groups = nbTeams.current.value;
     for (let i = 0; i < groups; i++) {
@@ -77,7 +48,7 @@ function App() {
 
   const handleReset = (event) => {
     event.preventDefault();
-    localStorage.removeItem("students");
+    removeItem("students");
     setStudents([]);
   };
 
@@ -86,14 +57,7 @@ function App() {
     const randomIndex = Math.floor(Math.random() * students.length);
     if (students.length === 0)
       return toastError("Herm.. Il n'y a pas d'élèves");
-    toast("🥁 And the winner is...", {
-      position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+    toastNatural();
     setTimeout(() => {
       toastSuccess(`🎉 ${students[randomIndex]} 🤩`);
       jsConfetti.addConfetti();
@@ -103,7 +67,7 @@ function App() {
   const handleAdd = (event) => {
     event.preventDefault();
     if (!name.current.value) return;
-    localStorage.setItem("students", [...students, name.current.value]);
+    setItems("students", [...students, name.current.value]);
     setStudents([...students, name.current.value]);
     name.current.value = "";
   };
@@ -112,7 +76,7 @@ function App() {
     event.preventDefault();
     const index = event.target.parentNode.dataset.index;
     const newStudents = students.filter((student, i) => i !== +index);
-    localStorage.setItem("students", newStudents);
+    setItems("students", newStudents);
     setStudents(newStudents);
   };
 
@@ -132,7 +96,7 @@ function App() {
           .filter((name) => name)
           .slice(1);
         setStudents(students);
-        localStorage.setItem("students", students);
+        setItems("students", students);
       };
 
       fileReader.readAsText(file);
