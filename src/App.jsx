@@ -1,9 +1,35 @@
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas";
+import { toast } from "react-toastify";
+import JSConfetti from "js-confetti";
 
 import style from "./assets/css/app.module.css";
 
+function toastError(message) {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+  });
+}
+function toastSuccess(message) {
+  toast(message, {
+    position: "top-right",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    emoji: "🎉",
+  });
+}
+
 function App() {
+  const jsConfetti = new JSConfetti();
+
   const getStudents = localStorage.getItem("students");
 
   const [file, setFile] = useState([]);
@@ -53,6 +79,25 @@ function App() {
     event.preventDefault();
     localStorage.removeItem("students");
     setStudents([]);
+  };
+
+  const handleGetRandomStudent = (event) => {
+    event.preventDefault();
+    const randomIndex = Math.floor(Math.random() * students.length);
+    if (students.length === 0)
+      return toastError("Herm.. Il n'y a pas d'élèves");
+    toast("🥁 And the winner is...", {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    setTimeout(() => {
+      toastSuccess(`🎉 ${students[randomIndex]} 🤩`);
+      jsConfetti.addConfetti();
+    }, 1000);
   };
 
   const handleAdd = (event) => {
@@ -204,6 +249,11 @@ function App() {
       </section>
       <section>
         <h2>Tirage au sort</h2>
+        <p>
+          Une personne sera tirée au sort parmi les élèves, qui ? Le hasard va
+          nous le dire !{" "}
+        </p>
+        <button onClick={handleGetRandomStudent}>And the winner is ! 🥁</button>
       </section>
     </main>
   );
