@@ -4,12 +4,15 @@ import style from "./assets/css/app.module.css";
 function App() {
   const getStudents = localStorage.getItem("students");
 
+  const [file, setFile] = useState([]);
   const [teams, setTeams] = useState([]);
   const [students, setStudents] = useState(
     getStudents ? getStudents.split(",") : [],
   );
   const nbTeams = useRef(4);
   const name = useRef("");
+
+  const fileReader = new FileReader();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -24,6 +27,7 @@ function App() {
 
   const handleAdd = (event) => {
     event.preventDefault();
+    if (!name.current.value) return;
     localStorage.setItem("students", [...students, name.current.value]);
     setStudents([...students, name.current.value]);
     name.current.value = "";
@@ -35,6 +39,29 @@ function App() {
     const newStudents = students.filter((student, i) => i !== +index);
     localStorage.setItem("students", newStudents);
     setStudents(newStudents);
+  };
+
+  const handleCSV = (event) => {
+    setFile(event.target.files[0]);
+  };
+  const handleSubmitCSV = (event) => {
+    event.preventDefault();
+
+    if (file) {
+      fileReader.onload = function (event) {
+        const csvOutput = event.target.result;
+        // now get only the first column and get values to an array
+        const students = csvOutput
+          .split("\n")
+          .map((row) => row.split(",")[0])
+          .filter((name) => name)
+          .slice(1);
+        setStudents(students);
+        localStorage.setItem("students", students);
+      };
+
+      fileReader.readAsText(file);
+    }
   };
 
   return (
@@ -80,8 +107,8 @@ function App() {
             {students.map((student, index) => (
               <li key={index} className={style.li} data-index={index}>
                 {student}
-                <button className="outline" onClick={handleDelete}>
-                  ❌
+                <button className={style.button_delete} onClick={handleDelete}>
+                  X
                 </button>
               </li>
             ))}
@@ -106,14 +133,14 @@ function App() {
           <details>
             <summary>ℹ️ Syntaxe</summary>
             <p>
-              Le fichier CSV doit contenir une colonne <code>name</code> avec le
-              nom des personnes de la team
+              Le fichier CSV doit contenir une colonne <code>firstname</code>{" "}
+              avec le nom des personnes de la team
             </p>
           </details>
           <hr />
-          <form>
+          <form onSubmit={(e) => handleSubmitCSV(e)}>
             <label htmlFor="file">Importer un fichier csv</label>
-            <input type="file" accept="application/csvm+json" />
+            <input type="file" accept={".csv"} onChange={handleCSV} />
             <button type="submit">Envoyer</button>
           </form>
         </div>
