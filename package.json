@@ -1,7 +1,7 @@
 {
-  "name": "generateur-equipe",
-  "private": true,
-  "version": "0.0.0",
+  "name": "generateur-groups",
+  "description": "Générateur de groupes",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
