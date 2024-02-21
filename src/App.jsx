@@ -1,68 +1,38 @@
 // Packages
 import { useRef, useState } from "react";
+import { DownloadCircle, InfoCircle, XmarkSquare } from "iconoir-react";
 
 // Local
 import handleTakePicture from "./services/takePicture.js";
-import { getItems, setItems, removeItem } from "./services/localStorage.js";
-import { toastSuccess, toastError, toastNatural } from "./services/toast.js";
-import jsConfetti from "./services/confetti.js";
+import { getItems, setItems } from "./services/localStorage.js";
+import {
+  handleCreateTeams,
+  handleReset,
+  handleGetRandomStudent,
+} from "./services/handlers.js";
 
 // Style
 import style from "./assets/css/app.module.css";
+import Footer from "./components/Footer.jsx";
+import { toastError } from "./services/toast.js";
 
 function App() {
-  const getStudents = getItems("students");
+  // Get students from local storage
+  const getStudents = getItems("students")
+    ? getItems("students").split(",")
+    : [];
 
+  // States
   const [file, setFile] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [students, setStudents] = useState(
-    getStudents ? getStudents.split(",") : [],
-  );
+  const [students, setStudents] = useState(getStudents);
+
+  // Refs
   const nbTeams = useRef(4);
   const name = useRef("");
 
+  // File reader (for CSV file)
   const fileReader = new FileReader();
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Create random teams from students
-    const students = getItems("students").split(",");
-    const teams = [];
-    const groups = nbTeams.current.value;
-    for (let i = 0; i < groups; i++) {
-      teams.push([]);
-    }
-
-    // now, we need to distribute the students randomly
-    while (students.length > 0) {
-      for (let i = 0; i < groups; i++) {
-        const randomIndex = Math.floor(Math.random() * students.length);
-        const student = students.splice(randomIndex, 1);
-        // add the student to the team
-        teams[i].push(student);
-        teams[i] = teams[i].flat();
-      }
-    }
-    setTeams(teams);
-  };
-
-  const handleReset = (event) => {
-    event.preventDefault();
-    removeItem("students");
-    setStudents([]);
-  };
-
-  const handleGetRandomStudent = (event) => {
-    event.preventDefault();
-    const randomIndex = Math.floor(Math.random() * students.length);
-    if (students.length === 0)
-      return toastError("Herm.. Il n'y a pas d'élèves");
-    toastNatural();
-    setTimeout(() => {
-      toastSuccess(`🎉 ${students[randomIndex]} 🤩`);
-      jsConfetti.addConfetti();
-    }, 1000);
-  };
 
   const handleAdd = (event) => {
     event.preventDefault();
@@ -85,11 +55,14 @@ function App() {
   };
   const handleSubmitCSV = (event) => {
     event.preventDefault();
+    if (file.length === 0) {
+      toastError("Herm.. Il n'y a pas de fichier");
+      return;
+    }
 
     if (file) {
       fileReader.onload = function (event) {
         const csvOutput = event.target.result;
-        // now get only the first column and get values to an array
         const students = csvOutput
           .split("\n")
           .map((row) => row.split(",")[0])
@@ -104,122 +77,140 @@ function App() {
   };
 
   return (
-    <main className="container-fluid">
-      <h1>Générateur de groupe aléatoire</h1>
-      <section className={style.section}>
-        <div>
-          <h2>Équipes</h2>
-          <p>
-            Il vous suffit de saisir le nombre d'équipes souhaitées et de
-            cliquer sur le bouton ci-dessous.
-          </p>
+    <>
+      <main className={`container-fluid ${style.main}`}>
+        <h1>Générateur de groupe</h1>
+        <section className={style.section}>
           <div>
-            <ul className={style.grid_teams} id="teams_picture">
-              {teams.map((team, index) => (
-                <li
-                  key={index}
-                  className={style.li}
-                  style={{ display: "flex", flexDirection: "column" }}
-                >
-                  <h3>Équipe {index + 1}</h3>
-                  <ul>
-                    {team.map((student, index) => (
-                      <li key={index}>{student}</li>
-                    ))}
-                  </ul>
+            <h2>Équipes</h2>
+            <p>
+              Il vous suffit de saisir le nombre d'équipes souhaitées et de
+              cliquer sur le bouton ci-dessous.
+            </p>
+            <div>
+              <ul className={style.grid_teams} id="teams_picture">
+                {teams.map((team, index) => (
+                  <li
+                    key={index}
+                    className={style.li}
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <h3>Équipe {index + 1}</h3>
+                    <ul>
+                      {team.map((student, index) => (
+                        <li key={index}>{student}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {
+              // If there are no teams, display a message, else display the button
+              teams.length === 0 ? (
+                <p>Il n'y a pas d'équipes pour le moment.</p>
+              ) : (
+                <button onClick={handleTakePicture}>
+                  <DownloadCircle /> Sauvegarder
+                </button>
+              )
+            }
+            <hr />
+            <form
+              onSubmit={(e) =>
+                handleCreateTeams(e, nbTeams.current.value, setTeams)
+              }
+            >
+              <div className="form-group">
+                <fieldset className="grid">
+                  <label htmlFor="nbTeams">
+                    Nombre d'équipes
+                    <input
+                      type="number"
+                      id="nbTeams"
+                      className="form-control"
+                      min="1"
+                      max="10"
+                      ref={nbTeams}
+                      defaultValue={nbTeams.current}
+                      required
+                    />
+                  </label>
+                  <button type="submit" className="outline">
+                    Générer des équipes
+                  </button>
+                </fieldset>
+              </div>
+            </form>
+          </div>
+          <div>
+            <h2>Listes des élèves</h2>
+            <p>
+              Vous pouvez saisir le nom des élèves un par un, et cliquer sur le
+              bouton <code>Ajouter un élève</code> pour les ajouter à la liste.
+            </p>
+            <ul className={style.grid_students}>
+              {students.map((student, index) => (
+                <li key={index} className={style.li} data-index={index}>
+                  {student}
+                  <button
+                    className={style.button_delete}
+                    onClick={handleDelete}
+                  >
+                    <XmarkSquare color="red" />
+                  </button>
                 </li>
               ))}
             </ul>
-          </div>
-          {
-            // if there are no teams, we don't show the button
-            teams.length === 0 ? (
-              <p>Il n'y a pas d'équipes pour le moment.</p>
-            ) : (
-              <button onClick={handleTakePicture}>sauvegarder</button>
-            )
-          }
-          <hr />
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
+
+            <form onSubmit={handleAdd}>
+              <input type="text" placeholder="Bob l'éponge" ref={name} />
               <fieldset className="grid">
-                <label htmlFor="nbTeams">
-                  Nombre d'équipes
-                  <input
-                    type="number"
-                    id="nbTeams"
-                    className="form-control"
-                    min="1"
-                    max="10"
-                    ref={nbTeams}
-                    defaultValue={nbTeams.current}
-                    required
-                  />
-                </label>
                 <button type="submit" className="outline">
-                  Générer des équipes
+                  Ajouter un élève
+                </button>
+                <button
+                  type="reset"
+                  className="outline contrast"
+                  onClick={(e) => handleReset(e, "students", setStudents)}
+                >
+                  Vider la liste
                 </button>
               </fieldset>
-            </div>
-          </form>
-        </div>
-        <div>
-          <h2>Listes des élèves</h2>
+            </form>
+            <hr />
+            <details>
+              <summary>
+                <InfoCircle />️ Syntaxe
+              </summary>
+              <p>
+                Le fichier CSV doit contenir une colonne <code>firstname</code>{" "}
+                avec le nom des personnes de la team
+              </p>
+            </details>
+            <hr />
+            <form onSubmit={(e) => handleSubmitCSV(e)} role="group">
+              <label htmlFor="file">
+                Importer un fichier csv
+                <input type="file" accept={".csv"} onChange={handleCSV} />
+              </label>
+              <button type="submit">Importer le CSV</button>
+            </form>
+          </div>
+        </section>
+        <section>
+          <h2>Tirage au sort</h2>
           <p>
-            Vous pouvez saisir le nom des élèves, un par ligne, et cliquer sur
-            le bouton ci-dessous pour les ajouter à la liste.
+            Une personne sera tirée au sort parmi les élèves, mais qui ? Le
+            hasard nous le dira !{" "}
           </p>
-          <ul className={style.grid_students}>
-            {students.map((student, index) => (
-              <li key={index} className={style.li} data-index={index}>
-                {student}
-                <button className={style.button_delete} onClick={handleDelete}>
-                  X
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <form onSubmit={handleAdd}>
-            <input type="text" placeholder="Bob l'éponge" ref={name} />
-            <fieldset className="grid">
-              <button type="submit" className="outline">
-                Ajouter un élève
-              </button>
-              <button
-                type="reset"
-                className="outline contrast"
-                onClick={handleReset}
-              >
-                Vider la liste
-              </button>
-            </fieldset>
-          </form>
-          <hr />
-          <details>
-            <summary>ℹ️ Syntaxe</summary>
-            <p>
-              Le fichier CSV doit contenir une colonne <code>firstname</code>{" "}
-              avec le nom des personnes de la team
-            </p>
-          </details>
-          <hr />
-          <form onSubmit={(e) => handleSubmitCSV(e)}>
-            <label htmlFor="file">Importer un fichier csv</label>
-            <input type="file" accept={".csv"} onChange={handleCSV} />
-            <button type="submit">Envoyer</button>
-          </form>
-        </div>
-      </section>
-      <section>
-        <h2>Tirage au sort</h2>
-        <p>
-          Une personne sera tirée au sort parmi les élèves, qui ? Le hasard va
-          nous le dire !{" "}
-        </p>
-        <button onClick={handleGetRandomStudent}>And the winner is ! 🥁</button>
-      </section>
-    </main>
+          <button onClick={(e) => handleGetRandomStudent(e, students)}>
+            And the winner is ! 🥁
+          </button>
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }
 
