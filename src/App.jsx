@@ -44,7 +44,7 @@ function App() {
 
   const handleDelete = (event) => {
     event.preventDefault();
-    const index = event.target.parentNode.dataset.index;
+    const index = event.target.parentNode.parentNode.dataset.index;
     const newStudents = students.filter((student, i) => i !== +index);
     setItems("students", newStudents);
     setStudents(newStudents);
