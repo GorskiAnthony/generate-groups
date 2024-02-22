@@ -1,5 +1,5 @@
-import { getItems, removeItem, setItems } from "./localStorage.js";
-import { toastError, toastNatural, toastSuccess } from "./toast.js";
+import { getItems, removeItem } from "./localStorage.js";
+import { toastError, toastNeutral, toastSuccess } from "./toast.js";
 import jsConfetti from "./confetti.js";
 
 /**
@@ -59,7 +59,7 @@ const handleGetRandomStudent = (event, students) => {
   event.preventDefault();
   const randomIndex = Math.floor(Math.random() * students.length);
   if (students.length === 0) return toastError("Herm.. Il n'y a pas d'élèves");
-  toastNatural();
+  toastNeutral();
   setTimeout(() => {
     toastSuccess(`🎉 ${students[randomIndex]} 🤩`);
     jsConfetti.addConfetti();

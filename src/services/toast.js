@@ -1,5 +1,9 @@
 import { toast } from "react-toastify";
 
+/**
+ * Description: Display an error message
+ * @param {String} message - Error message
+ */
 function toastError(message) {
   toast.error(message, {
     position: "top-right",
@@ -10,6 +14,11 @@ function toastError(message) {
     draggable: true,
   });
 }
+
+/**
+ * Description: Display a success message
+ * @param {String} message - Success message
+ */
 function toastSuccess(message) {
   toast(message, {
     position: "top-right",
@@ -22,7 +31,10 @@ function toastSuccess(message) {
   });
 }
 
-function toastNatural() {
+/**
+ * Description: Display a neutral message
+ */
+function toastNeutral() {
   toast("🥁 And the winner is...", {
     position: "top-right",
     autoClose: 4000,
@@ -33,4 +45,4 @@ function toastNatural() {
   });
 }
 
-export { toastError, toastSuccess, toastNatural };
+export { toastError, toastSuccess, toastNeutral };
