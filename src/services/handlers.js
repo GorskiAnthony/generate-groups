@@ -13,6 +13,10 @@ const handleCreateTeams = (event, groups, setter) => {
   event.preventDefault();
   const students = getItems("students")?.split(",");
   if (students === undefined) return toastError("Herm.. Il n'y a pas d'élèves");
+  if (students.length < groups)
+    return toastError(
+      "Herm.. Il n'y a pas assez d'élèves pour créer des équipes",
+    );
   const teams = [];
   for (let i = 0; i < groups; i++) {
     teams.push([]);
