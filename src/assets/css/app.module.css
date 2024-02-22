@@ -56,4 +56,9 @@
   .section {
     flex-direction: column;
   }
+
+  .grid_students {
+    padding: 0;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
