@@ -1,5 +1,6 @@
 // Packages
 import { useRef, useState } from "react";
+import GithubCorner from "react-github-corner";
 import { DownloadCircle, InfoCircle, XmarkSquare } from "iconoir-react";
 
 // Local
@@ -210,6 +211,13 @@ function App() {
         </section>
       </main>
       <Footer />
+      <GithubCorner
+        href="https://github.com/GorskiAnthony/generate-groups"
+        bannerColor="#151513"
+        octoColor="#fff"
+        size={80}
+        direction="right"
+      />
     </>
   );
 }
