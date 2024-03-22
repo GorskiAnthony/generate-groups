@@ -5,14 +5,14 @@ import { toast } from "react-toastify";
  * @param {String} message - Error message
  */
 function toastError(message) {
-  toast.error(message, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
+	toast.error(message, {
+		position: "top-right",
+		autoClose: 3000,
+		hideProgressBar: false,
+		closeOnClick: true,
+		pauseOnHover: true,
+		draggable: true,
+	});
 }
 
 /**
@@ -20,29 +20,29 @@ function toastError(message) {
  * @param {String} message - Success message
  */
 function toastSuccess(message) {
-  toast(message, {
-    position: "top-right",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    emoji: "🎉",
-  });
+	toast(message, {
+		position: "bottom-right",
+		autoClose: 3000,
+		hideProgressBar: false,
+		closeOnClick: true,
+		pauseOnHover: true,
+		draggable: true,
+		emoji: "🎉",
+	});
 }
 
 /**
  * Description: Display a neutral message
  */
 function toastNeutral() {
-  toast("🥁 And the winner is...", {
-    position: "top-right",
-    autoClose: 4000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
+	toast("🥁 And the winner is...", {
+		position: "bottom-right",
+		autoClose: 4000,
+		hideProgressBar: false,
+		closeOnClick: true,
+		pauseOnHover: true,
+		draggable: true,
+	});
 }
 
 export { toastError, toastSuccess, toastNeutral };
