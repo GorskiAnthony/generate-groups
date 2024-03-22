@@ -1,64 +1,86 @@
 .main {
-  margin: 2rem 0;
+	margin: 2rem 0;
 }
 
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
 }
 
 .section {
-  display: flex;
-  gap: 2rem;
+	display: flex;
+	gap: 2rem;
 }
 
 .section div {
-  flex: 1;
-  padding: 10px;
+	flex: 1;
+	padding: 10px;
 }
 
 .grid_students {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 20px;
 }
 
-.grid_teams {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding: 10px;
+.project {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+}
+
+.flex_teams {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 10px;
+}
+
+.flex_teams li {
+	list-style: none; /* Supprime le style de liste par défaut */
+	position: relative; /* Positionne relativement pour le pseudo-élément ::before */
+	padding-left: 50px; /* Fournit de l'espace pour l'image */
+}
+
+.flex_teams li::before {
+	content: ""; /* Nécessaire pour afficher le pseudo-élément */
+	position: absolute; /* Position absolue par rapport à l'élément li */
+	left: 0; /* Positionne le pseudo-élément au début de l'élément li */
+	top: 0; /* Positionne le pseudo-élément en haut de l'élément li */
+	width: 30px; /* Largeur de l'image */
+	height: 30px; /* Hauteur de l'image */
+	background-image: url("https://img.icons8.com/ios/452/user.png"); /* L'image que vous voulez utiliser */
+	background-size: cover; /* Fait en sorte que l'image couvre complètement la zone définie */
 }
 
 .li {
-  list-style: none;
-  padding: 10px;
-  border: 1px solid #000;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	list-style: none;
+	padding: 10px;
+	border: 1px solid #000;
+	border-radius: 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .button_delete {
-  background-color: transparent;
-  border: none;
-  padding: 0 10px;
-  margin-left: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
+	background-color: transparent;
+	border: none;
+	padding: 0 10px;
+	margin-left: 1rem;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 @media (max-width: 768px) {
-  .section {
-    flex-direction: column;
-  }
+	.section {
+		flex-direction: column;
+	}
 
-  .grid_students {
-    padding: 0;
-    grid-template-columns: repeat(2, 1fr);
-  }
+	.grid_students {
+		padding: 0;
+		grid-template-columns: repeat(2, 1fr);
+	}
 }
