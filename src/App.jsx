@@ -15,7 +15,7 @@ import {
 // Style
 import style from "./assets/css/app.module.css";
 import Footer from "./components/Footer.jsx";
-import { toastError } from "./services/toast.js";
+import { toastError, toastSuccess } from "./services/toast.js";
 
 function App() {
 	// Get students from local storage
@@ -74,6 +74,7 @@ function App() {
 			};
 
 			fileReader.readAsText(file);
+			toastSuccess("📂 CSV importé avec succès");
 		}
 	};
 
