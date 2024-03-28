@@ -90,23 +90,34 @@ function App() {
 							souhaitées et de cliquer sur le bouton ci-dessous.
 						</p>
 						<div>
-							<ul className={style.grid_teams} id="teams_picture">
-								{teams.map((team, index) => (
-									<li
-										key={index}
-										className={style.li}
-										style={{
-											display: "flex",
-											flexDirection: "column",
-										}}
-									>
-										<h3>Équipe {index + 1}</h3>
-										<ul>
-											{team.map((student, index) => (
-												<li key={index}>{student}</li>
+							<ul className={style.projects} id="teams_picture">
+								{teams.map((projet, index) => (
+									<div key={index}>
+										<h3>Projet {index + 1}</h3>
+										<ul className={style.project}>
+											{projet.map((team, index) => (
+												<li key={index}>
+													<h4>Team {index + 1}</h4>
+													<ul
+														className={
+															style.flex_teams
+														}
+													>
+														{team.map(
+															(
+																student,
+																index
+															) => (
+																<li key={index}>
+																	{student}
+																</li>
+															)
+														)}
+													</ul>
+												</li>
 											))}
 										</ul>
-									</li>
+									</div>
 								))}
 							</ul>
 						</div>
