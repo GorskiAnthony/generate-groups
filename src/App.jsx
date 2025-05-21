@@ -150,7 +150,7 @@ function App() {
 											id="nbTeams"
 											className="form-control"
 											min="1"
-											max="10"
+											max="15"
 											ref={nbTeams}
 											defaultValue={nbTeams.current}
 											required
